@@ -1,38 +1,35 @@
 class Book {
-  int? _id;
-  int? done;
-  String? _bookTitle;
-  String? _bookAuthor;
-  String? _bookCoverUrl;
+  int? id;
+  String? authorname;
+  String? bookname;
+  String? imgUrl;
 
   Book(dynamic obj) {
-    _id = obj['id'];
-    done = obj['done'];
-    _bookTitle = obj['bookTitle'];
-    _bookAuthor = obj['bookAuthor'];
-    _bookCoverUrl = obj['bookCoverUrl'];
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': _id,
-      'done': done,
-      'bookTitle': _bookTitle,
-      'bookAuthor': _bookAuthor,
-      'bookCoverUrl': _bookCoverUrl
-    };
+    id = obj['id'];
+    bookname = obj['bookname'];
+    authorname = obj['authorname'];
+    imgUrl = obj['imgurl'];
   }
 
   Book.fromMap(Map<String, dynamic> map) {
-    _id = map['id'];
-    done = map['done'];
-    _bookTitle = map['bookTitle'];
-    _bookAuthor = map['bookAuthor'];
-    _bookCoverUrl = map['bookCoverUrl'];
+    id = map['id'];
+    bookname = map['bookname'];
+    authorname = map['authorname'];
+    imgUrl = map['imgurl'];
   }
 
-  int? get id => _id;
-  String? get bookTitle => _bookTitle;
-  String? get bookAuthor => _bookAuthor;
-  String? get bookCoverUrl => _bookCoverUrl;
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{
+      'id': id,
+      'bookname': bookname,
+      'authorname': authorname,
+      'imgurl': imgUrl,
+    };
+    return map;
+  }
+
+  get showBookId => id;
+  get showAuthorName => authorname;
+  get showBookName => bookname;
+  get showImgUrl => imgUrl;
 }

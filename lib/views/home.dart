@@ -1,8 +1,8 @@
-import 'package:book_store/models/db_model.dart';
 import 'package:flutter/material.dart';
-
 import '../database/db_helper.dart';
-import '../widget/book_form.dart';
+import '../models/db_model.dart';
+import '../widget/add_book_botton.dart';
+import '../widget/book_list.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,10 +13,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Book> _books = [];
+  DbHelper? db;
 
   @override
   void initState() {
     super.initState();
+    db = DbHelper();
     _fetchBooks();
   }
 
@@ -28,59 +30,25 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _removeBook(int bookId) async {
+    await db!.deleteBook(bookId);
+    _fetchBooks();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        centerTitle: true,
+      floatingActionButton: AddBookButton(onAddBook: _fetchBooks),
+      appBar:  AppBar(
         title: const Text(
           'Available Books',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50),
-        ),
-        onPressed: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => BookForm(onBookSaved: _fetchBooks),
-            ),
-          );
-        },
-        child: const Icon(
-          Icons.add,
-          size: 30,
-        ),
+        backgroundColor: Colors.blue.shade900,
+        centerTitle: true,
       ),
-      body: _books.isEmpty
-          ? const Center(child: Text('No books available'))
-          : ListView.builder(
-        itemCount: _books.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(_books[index].bookTitle ?? 'No Title'),
-            subtitle: Text(_books[index].bookAuthor ?? 'No Author'),
-            trailing: Checkbox(
-              value: _books[index].done == 1,
-              onChanged: (bool? value) async {
-                int newValue = value! ? 1 : 0;
-                var dbHelper = DbHelper();
-                await dbHelper.updateBookDone(_books[index].id!, newValue);
-                setState(() {
-                  _books[index].done = newValue;
-                });
-              },
-            ),
-          );
-        },
-      ),
+      body: BookList(books: _books, onRemoveBook: _removeBook),
     );
   }
 }

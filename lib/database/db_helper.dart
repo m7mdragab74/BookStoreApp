@@ -11,54 +11,44 @@ class DbHelper {
   static Database? _db;
   Future<Database> createDatabase() async {
     if (_db != null) {
-      print('Database already exists');
+      print('Database already exists.');
       return _db!;
     }
-    String path = join(await getDatabasesPath(), 'ToDoOne.db');
+    String path = join(await getDatabasesPath(), 'FinalData.db');
     _db = await openDatabase(
       path,
       version: 1,
-      onCreate: (db, version) async {
-        print('Creating Database and Tables');
+      onCreate: (Database db, int version) async {
+        print('Creating database and tables...');
         return db.execute(
-            'CREATE TABLE Books1(id INTEGER PRIMARY KEY AUTOINCREMENT, done INTEGER, bookTitle TEXT, bookAuthor TEXT, bookCoverUrl TEXT)');
+            'CREATE TABLE products(id INTEGER PRIMARY KEY AUTOINCREMENT,bookname TEXT,authorname TEXT,imgurl TEXT)');
       },
     );
-    print('Database Created Successfully');
+    print('Database created successfully.');
     return _db!;
-  }
-
-  Future<int> deleteCourse(Book book) async {
-    Database db = await createDatabase();
-    return db.delete('Books1', where: 'id = ?', whereArgs: [book.id]);
   }
 
   Future<int> insertBook(Book book) async {
     Database db = await createDatabase();
-    print('Inserting Books: $book');
-    int result = await db.insert('Books1', book.toMap());
-    print('Task inserted with id: $result');
+    print('Inserting book: $book');
+    int result = await db.insert('products', book.toMap());
+    print('Book inserted successfully with id: $result');
     return result;
   }
 
   Future<List<Map<String, dynamic>>> getBooks() async {
     Database db = await createDatabase();
-    print('Fetching Books from the database.');
-    List<Map<String, dynamic>> books = await db.query('Books1');
-    print('Fetched ${books.length} tasks from the database.');
+    print('Fetching books from the database.');
+    List<Map<String, dynamic>> books = await db.query('products');
+    print('Fetched ${books.length} books from the database.');
     return books;
   }
 
-  Future<int> updateBookDone(int id, int done) async {
+  Future<int> deleteBook(int id) async {
     Database db = await createDatabase();
-    print('Updating Book done with id: $id to $done');
-    int result = await db.update(
-      'Books1',
-      {'done': done},
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-    print('Task done updated successfully. Updated $result record(s).');
+    print('Deleting book with id: $id');
+    int result = await db.delete('products', where: 'id = ?', whereArgs: [id]);
+    print('Book deleted successfully. Deleted $result record(s).');
     return result;
   }
 }
